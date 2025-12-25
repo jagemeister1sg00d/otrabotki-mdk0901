@@ -1,0 +1,342 @@
+<div class="analytics-app">
+  <header class="header">
+    <h1>📊 Система аналитики с Pipes</h1>
+    <p class="subtitle">Демонстрация пользовательских пайпов для аналитики</p>
+  </header>
+
+  <main class="main-content">
+    <!-- Настройки отображения -->
+    <section class="controls">
+      <h2>⚙️ Настройки отображения</h2>
+      <div class="control-group">
+        <div class="control-item">
+          <label>
+            <input type="radio" [(ngModel)]="numberFormat" value="auto">
+            Автоформатирование чисел
+          </label>
+          <label>
+            <input type="radio" [(ngModel)]="numberFormat" value="full">
+            Полные числа
+          </label>
+        </div>
+        <div class="control-item">
+          <label>
+            <input type="checkbox" [(ngModel)]="showEmoji">
+            Показывать эмодзи
+          </label>
+        </div>
+        <div class="control-item">
+          <label>Формат сравнения:</label>
+          <select [(ngModel)]="comparisonFormat">
+            <option value="both">Абсолютное и относительное</option>
+            <option value="absolute">Только абсолютное</option>
+            <option value="relative">Только относительное</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- Демонстрация встроенных пайпов -->
+    <section class="builtin-pipes">
+      <h2>🔧 Встроенные пайпы Angular</h2>
+      <div class="pipes-grid">
+        <div class="pipe-demo">
+          <h3>date</h3>
+          <p>Без пайпа: {{ testDate }}</p>
+          <p>С пайпом: {{ testDate | date:'fullDate' }}</p>
+          <p>Коротко: {{ testDate | date:'dd.MM.yyyy HH:mm' }}</p>
+        </div>
+        <div class="pipe-demo">
+          <h3>currency</h3>
+          <p>Без пайпа: {{ testCurrency }}</p>
+          <p>С пайпом: {{ testCurrency | currency:'RUB':'symbol':'1.0-0' }}</p>
+          <p>USD: {{ testCurrency | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="pipe-demo">
+          <h3>percent</h3>
+          <p>Без пайпа: {{ testPercent }}</p>
+          <p>С пайпом: {{ testPercent | percent:'1.1-2' }}</p>
+        </div>
+        <div class="pipe-demo">
+          <h3>uppercase/lowercase</h3>
+          <p>Исходный: "Hello World"</p>
+          <p>UPPERCASE: {{ 'Hello World' | uppercase }}</p>
+          <p>lowercase: {{ 'Hello World' | lowercase }}</p>
+        </div>
+        <div class="pipe-demo">
+          <h3>json</h3>
+          <p>Объект: {{ metrics[0] | json }}</p>
+        </div>
+        <div class="pipe-demo">
+          <h3>slice</h3>
+          <p>Массив: [1, 2, 3, 4, 5]</p>
+          <p>slice:1:4: {{ [1, 2, 3, 4, 5] | slice:1:4 }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Пользовательские пайпы -->
+    <section class="custom-pipes">
+      <h2>🎨 Пользовательские пайпы для аналитики</h2>
+      
+      <!-- 1. Пайп форматирования метрик -->
+      <div class="pipe-section">
+        <h3>1. metricFormat - Форматирование метрик</h3>
+        <p>Форматирует большие числа, проценты и валюты</p>
+        <div class="examples">
+          <div class="example">
+            <h4>Большие числа:</h4>
+            <p>15432 чел. → {{ 15432 | metricFormat:'чел.' }}</p>
+            <p>1254321 ₽ → {{ 1254321 | metricFormat:'₽' }}</p>
+            <p>2345678 → {{ 2345678 | metricFormat:'' }}</p>
+          </div>
+          <div class="example">
+            <h4>Проценты:</h4>
+            <p>0.2345 → {{ 0.2345 | metricFormat:'%' }}</p>
+          </div>
+          <div class="example">
+            <h4>Настройка точности:</h4>
+            <p>1234.5678 → {{ 1234.5678 | metricFormat:'ед.':0 }}</p>
+            <p>1234.5678 → {{ 1234.5678 | metricFormat:'ед.':4 }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Пайп процентного изменения -->
+      <div class="pipe-section">
+        <h3>2. percentChange - Процентное изменение</h3>
+        <p>Рассчитывает и форматирует процентное изменение между значениями</p>
+        <div class="examples">
+          <div class="example">
+            <h4>Положительное изменение:</h4>
+            <p>Текущее: 150, Предыдущее: 100 → {{ 150 | percentChange:100 }}</p>
+          </div>
+          <div class="example">
+            <h4>Отрицательное изменение:</h4>
+            <p>Текущее: 80, Предыдущее: 100 → {{ 80 | percentChange:100 }}</p>
+          </div>
+          <div class="example">
+            <h4>Без знака:</h4>
+            <p>150 vs 100 → {{ 150 | percentChange:100:false }}</p>
+          </div>
+          <div class="example">
+            <h4>Больше знаков:</h4>
+            <p>150.5 vs 100.2 → {{ 150.5 | percentChange:100.2:true:2 }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Пайп трендов -->
+      <div class="pipe-section">
+        <h3>3. trend - Тренды и направления</h3>
+        <p>Визуализирует тренды с эмодзи или без</p>
+        <div class="examples">
+          <div class="example">
+            <h4>С эмодзи:</h4>
+            <p>Рост: {{ 'up' | trend:12.5 }}</p>
+            <p>Снижение: {{ 'down' | trend:-3.2 }}</p>
+            <p>Стабильно: {{ 'stable' | trend:0.5 }}</p>
+          </div>
+          <div class="example">
+            <h4>Без эмодзи:</h4>
+            <p>Рост: {{ 'up' | trend:12.5:false }}</p>
+            <p>Снижение: {{ 'down' | trend:-3.2:false }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Пайп сравнения периодов -->
+      <div class="pipe-section">
+        <h3>4. periodComparison - Сравнение периодов</h3>
+        <p>Сравнивает текущее и предыдущее значения в разных форматах</p>
+        <div class="examples">
+          <div class="example">
+            <h4>Оба формата (по умолчанию):</h4>
+            <p>150 vs 100 → {{ 150 | periodComparison:100 }}</p>
+          </div>
+          <div class="example">
+            <h4>Только абсолютное:</h4>
+            <p>150 vs 100 → {{ 150 | periodComparison:100:'absolute' }}</p>
+          </div>
+          <div class="example">
+            <h4>Только относительное:</h4>
+            <p>150 vs 100 → {{ 150 | periodComparison:100:'relative' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Пайп прогнозов -->
+      <div class="pipe-section">
+        <h3>5. forecast - Прогнозы</h3>
+        <p>Формирует текстовые прогнозы на основе текущих и прогнозных значений</p>
+        <div class="examples">
+          <div class="example">
+            <h4>Рост:</h4>
+            <p>Текущее: 1000, Прогноз: 1200 → {{ 1000 | forecast:1200 }}</p>
+          </div>
+          <div class="example">
+            <h4>Снижение:</h4>
+            <p>Текущее: 1000, Прогноз: 850 → {{ 1000 | forecast:850 }}</p>
+          </div>
+          <div class="example">
+            <h4>Без уровня доверия:</h4>
+            <p>1000 → 1200 → {{ 1000 | forecast:1200:0.8:false }}</p>
+          </div>
+          <div class="example">
+            <h4>С низким доверием:</h4>
+            <p>1000 → 1200 → {{ 1000 | forecast:1200:0.5 }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Тестирование пайпов -->
+      <div class="test-section">
+        <h3>🧪 Тестирование пайпов</h3>
+        <div class="test-form">
+          <div class="form-group">
+            <label>Текущее значение:</label>
+            <input type="number" [(ngModel)]="userNumber" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Предыдущее значение:</label>
+            <input type="number" [(ngModel)]="userPrevious" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Единица измерения:</label>
+            <select [(ngModel)]="userUnit">
+              <option value="₽">Рубли</option>
+              <option value="$">Доллары</option>
+              <option value="%">Проценты</option>
+              <option value="чел.">Человек</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="test-results">
+          <h4>Результаты:</h4>
+          <p><strong>Форматирование:</strong> {{ userNumber | metricFormat:userUnit }}</p>
+          <p><strong>Изменение:</strong> {{ userNumber | percentChange:userPrevious }}</p>
+          <p><strong>Сравнение:</strong> {{ userNumber | periodComparison:userPrevious:comparisonFormat }}</p>
+          <p><strong>Прогноз:</strong> {{ userNumber | forecast:(userNumber * 1.2) }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Применение в реальной аналитике -->
+    <section class="real-application">
+      <h2>📈 Применение пайпов в реальной аналитике</h2>
+      
+      <!-- Таблица метрик -->
+      <div class="metrics-table">
+        <h3>Ключевые метрики</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Метрика</th>
+              <th>Текущее значение</th>
+              <th>Предыдущее</th>
+              <th>Изменение</th>
+              <th>Тренд</th>
+              <th>Прогноз</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (metric of metrics; track metric.id) {
+              <tr>
+                <td>{{ metric.name }}</td>
+                <td>{{ metric.value | metricFormat:metric.unit }}</td>
+                <td>{{ metric.previousValue | metricFormat:metric.unit }}</td>
+                <td 
+                  [class.positive]="metric.changePercent > 0"
+                  [class.negative]="metric.changePercent < 0"
+                >
+                  {{ metric | percentChange:metric.previousValue }}
+                </td>
+                <td 
+                  [style.color]="getTrendColor(metric.trend)"
+                >
+                  {{ metric.trend | trend:metric.changePercent:showEmoji }}
+                </td>
+                <td>{{ metric.value | forecast:metric.forecastValue }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Сравнение периодов -->
+      <div class="periods-comparison">
+        <h3>Сравнение по периодам</h3>
+        <div class="periods-grid">
+          @for (period of periodData.slice(0, 3); track period.period) {
+            <div class="period-card">
+              <h4>{{ period.period }}</h4>
+              <p class="period-dates">
+                {{ period.startDate | date:'dd.MM' }} - {{ period.endDate | date:'dd.MM.yy' }}
+              </p>
+              <div class="period-metrics">
+                @for (metric of period.metrics.slice(0, 2); track metric.id) {
+                  <div class="period-metric">
+                    <div class="metric-name">{{ metric.name }}</div>
+                    <div class="metric-value">{{ metric.value | metricFormat:metric.unit:0 }}</div>
+                    @if ($index < 1) {
+                      <div class="metric-change">
+                        {{ metric.value | periodComparison:metric.previousValue:'relative' }}
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Визуализация трендов -->
+      <div class="trends-visualization">
+        <h3>Визуализация трендов</h3>
+        <div class="trend-charts">
+          @for (metric of metrics.slice(0, 2); track metric.id) {
+            <div class="trend-chart">
+              <h4>{{ metric.name }}</h4>
+              <div class="chart-container">
+                <div class="chart">
+                  @for (value of getTrendData(metric.name); track $index) {
+                    <div 
+                      class="chart-bar" 
+                      [style.height.%]="(value / 2000) * 100"
+                      [title]="value | metricFormat:metric.unit"
+                    ></div>
+                  }
+                </div>
+                <div class="chart-labels">
+                  <span>12 мес назад</span>
+                  <span>Сейчас</span>
+                </div>
+              </div>
+              <div class="chart-info">
+                <p>Тренд: {{ metric.trend | trend:metric.changePercent:showEmoji }}</p>
+                <p>Прогноз: {{ metric.value | forecast:metric.forecastValue:0.8:false }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>Практическая работа: Пайпы (Pipes) в Angular</p>
+      <p>Вариант 10: Пайпы для системы аналитики</p>
+      <p class="pipe-list">
+        Созданные пайпы: 
+        <span class="pipe-badge">metricFormat</span>
+        <span class="pipe-badge">percentChange</span>
+        <span class="pipe-badge">trend</span>
+        <span class="pipe-badge">periodComparison</span>
+        <span class="pipe-badge">forecast</span>
+      </p>
+    </div>
+  </footer>
+</div>
