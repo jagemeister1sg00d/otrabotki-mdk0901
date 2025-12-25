@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameCharacter - TypeScript Практическая работа 13</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-robot"></i> GameCharacter System</h1>
+                <p class="subtitle">TypeScript Практическая работа 13 - Вариант 10</p>
+                <p class="header-description">Класс GameCharacter с перегрузкой методов для управления состоянием персонажа</p>
+            </div>
+            <div class="tech-badge">
+                <span class="typescript-badge">TypeScript</span>
+                <span class="oop-badge">ООП</span>
+                <span class="overload-badge">Перегрузка методов</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="character-creation">
+                <h2><i class="fas fa-plus-circle"></i> Создание персонажа</h2>
+                <div class="creation-form">
+                    <div class="form-group">
+                        <label for="characterName">
+                            <i class="fas fa-user"></i> Имя персонажа:
+                        </label>
+                        <input type="text" id="characterName" placeholder="Введите имя персонажа" value="Артас">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="characterClass">
+                            <i class="fas fa-helmet-battle"></i> Класс:
+                        </label>
+                        <select id="characterClass">
+                            <option value="warrior">Воин</option>
+                            <option value="mage">Маг</option>
+                            <option value="archer">Лучник</option>
+                            <option value="healer">Целитель</option>
+                        </select>
+                    </div>
+                    
+                    <button id="createCharacterBtn" class="btn btn-create">
+                        <i class="fas fa-hat-wizard"></i> Создать персонажа
+                    </button>
+                </div>
+            </section>
+
+            <div class="game-content">
+                <section class="character-info">
+                    <h2><i class="fas fa-id-card"></i> Информация о персонаже</h2>
+                    <div class="character-card" id="characterCard">
+                        <div class="character-default">
+                            <i class="fas fa-user-plus"></i>
+                            <p>Создайте персонажа для начала игры</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item health-stat">
+                            <div class="stat-header">
+                                <i class="fas fa-heart"></i>
+                                <h3>Здоровье</h3>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="healthBar"></div>
+                            </div>
+                            <div class="stat-value" id="healthValue">100/100</div>
+                        </div>
+                        
+                        <div class="stat-item mana-stat">
+                            <div class="stat-header">
+                                <i class="fas fa-gem"></i>
+                                <h3>Мана</h3>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="manaBar"></div>
+                            </div>
+                            <div class="stat-value" id="manaValue">100/100</div>
+                        </div>
+                        
+                        <div class="stat-item stamina-stat">
+                            <div class="stat-header">
+                                <i class="fas fa-bolt"></i>
+                                <h3>Выносливость</h3>
+                            </div>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="staminaBar"></div>
+                            </div>
+                            <div class="stat-value" id="staminaValue">100/100</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="actions-section">
+                    <h2><i class="fas fa-gamepad"></i> Действия с персонажем</h2>
+                    
+                    <div class="actions-grid">
+                        <!-- Перегрузка метода 1: applyDamage/heal -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <i class="fas fa-fist-raised"></i>
+                                <h3>Метод applyDamage/heal</h3>
+                            </div>
+                            <p class="action-description">
+                                <strong>Перегрузка методов:</strong> один метод для нанесения урона и лечения
+                            </p>
+                            <div class="action-params">
+                                <label>Значение (положительное для лечения, отрицательное для урона):</label>
+                                <input type="number" id="damageHealValue" value="-20" min="-100" max="100">
+                            </div>
+                            <button class="btn btn-action" id="applyDamageBtn">
+                                <i class="fas fa-bolt"></i> Применить к персонажу
+                            </button>
+                            <div class="overload-info">
+                                <code>applyDamage(value: number): void</code><br>
+                                <code>applyDamage(action: 'heal' | 'damage', value: number): void</code>
+                            </div>
+                        </div>
+                        
+                        <!-- Перегрузка метода 2: useSkill -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <i class="fas fa-fire"></i>
+                                <h3>Метод useSkill</h3>
+                            </div>
+                            <p class="action-description">
+                                <strong>Перегрузка методов:</strong> использование навыка по имени или объекту
+                            </p>
+                            <div class="action-params">
+                                <label>Выберите способ использования:</label>
+                                <select id="skillUsageType">
+                                    <option value="name">По имени</option>
+                                    <option value="object">По объекту</option>
+                                </select>
+                                <input type="text" id="skillName" placeholder="Имя навыка" value="Огненный шар">
+                            </div>
+                            <button class="btn btn-action" id="useSkillBtn">
+                                <i class="fas fa-magic"></i> Использовать навык
+                            </button>
+                            <div class="overload-info">
+                                <code>useSkill(skillName: string): void</code><br>
+                                <code>useSkill(skill: Skill): void</code>
+                            </div>
+                        </div>
+                        
+                        <!-- Перегрузка метода 3: addItem -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <i class="fas fa-backpack"></i>
+                                <h3>Метод addItem</h3>
+                            </div>
+                            <p class="action-description">
+                                <strong>Перегрузка методов:</strong> добавление предмета по имени или объекту с опциональным количеством
+                            </p>
+                            <div class="action-params">
+                                <label>Предмет:</label>
+                                <input type="text" id="itemName" placeholder="Имя предмета" value="Зелье здоровья">
+                                <label>Количество (опционально):</label>
+                                <input type="number" id="itemQuantity" placeholder="Количество" value="1" min="1">
+                            </div>
+                            <button class="btn btn-action" id="addItemBtn">
+                                <i class="fas fa-plus"></i> Добавить предмет
+                            </button>
+                            <div class="overload-info">
+                                <code>addItem(itemName: string): void</code><br>
+                                <code>addItem(itemName: string, quantity: number): void</code><br>
+                                <code>addItem(item: InventoryItem): void</code>
+                            </div>
+                        </div>
+                        
+                        <!-- Перегрузка метода 4: moveTo -->
+                        <div class="action-card">
+                            <div class="action-header">
+                                <i class="fas fa-walking"></i>
+                                <h3>Метод moveTo</h3>
+                            </div>
+                            <p class="action-description">
+                                <strong>Перегрузка методов:</strong> движение к координатам или цели
+                            </p>
+                            <div class="action-params">
+                                <label>Координата X:</label>
+                                <input type="number" id="coordX" placeholder="X" value="100">
+                                <label>Координата Y:</label>
+                                <input type="number" id="coordY" placeholder="Y" value="150">
+                            </div>
+                            <button class="btn btn-action" id="moveToBtn">
+                                <i class="fas fa-location-arrow"></i> Переместить
+                            </button>
+                            <div class="overload-info">
+                                <code>moveTo(x: number, y: number): void</code><br>
+                                <code>moveTo(target: GameObject): void</code>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="log-section">
+                        <h3><i class="fas fa-scroll"></i> Журнал действий</h3>
+                        <div class="log-container" id="actionLog">
+                            <div class="log-entry">Система инициализирована. Создайте персонажа.</div>
+                        </div>
+                        <button class="btn btn-clear" id="clearLogBtn">
+                            <i class="fas fa-trash"></i> Очистить журнал
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <section class="code-example">
+                <h2><i class="fas fa-code"></i> Пример реализации перегрузки методов</h2>
+                <div class="code-container">
+                    <pre><code>
+// Пример перегрузки метода applyDamage/heal
+applyDamage(value: number): void;
+applyDamage(action: 'heal' | 'damage', value: number): void;
+applyDamage(param1: number | 'heal' | 'damage', param2?: number): void {
+    // Реализация метода с проверкой типа параметров
+    if (typeof param1 === 'number') {
+        // Первая форма: applyDamage(value: number)
+        const amount = param1;
+        this.health = Math.max(0, Math.min(this.maxHealth, this.health + amount));
+        this.addLog(amount >= 0 ? `Получено лечение: +${amount} HP` : 
+                               `Получен урон: ${amount} HP`);
+    } else {
+        // Вторая форма: applyDamage(action, value)
+        const action = param1;
+        const amount = param2 || 0;
+        const actualAmount = action === 'heal' ? amount : -amount;
+        this.health = Math.max(0, Math.min(this.maxHealth, this.health + actualAmount));
+        this.addLog(`${action === 'heal' ? 'Лечение' : 'Урон'}: ${amount} HP`);
+    }
+}
+                    </code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Практическая работа по TypeScript. Вариант 10: Класс GameCharacter с перегрузкой методов</p>
+                <p class="footer-info">
+                    <i class="fas fa-graduation-cap"></i> Типизация функций и классов в TypeScript
+                </p>
+            </div>
+            <div class="type-info">
+                <span class="type-badge">string</span>
+                <span class="type-badge">number</span>
+                <span class="type-badge">boolean</span>
+                <span class="type-badge">void</span>
+                <span class="type-badge">object</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
