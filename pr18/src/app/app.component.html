@@ -1,0 +1,91 @@
+<div class="app-container">
+  <header class="header">
+    <h1>🔔 Система уведомлений</h1>
+    <div class="stats">
+      <span>Всего: {{ statistics.total }}</span>
+      <span>Непрочитанные: {{ statistics.unread }}</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Левая колонка -->
+    <div class="left-column">
+      <!-- Список уведомлений -->
+      <app-notification-list
+        [notifications]="notifications"
+        (markAsRead)="onMarkAsRead($event)"
+        (deleteNotification)="onDeleteNotification($event)"
+        (clearAll)="onClearAllNotifications()"
+      ></app-notification-list>
+      
+      <!-- История уведомлений -->
+      <app-notification-history
+        [notifications]="notifications"
+      ></app-notification-history>
+    </div>
+    
+    <!-- Правая колонка -->
+    <div class="right-column">
+      <!-- Настройки -->
+      <app-notification-settings
+        (settingsChanged)="onSettingsChanged($event)"
+      ></app-notification-settings>
+      
+      <!-- Шаблоны сообщений -->
+      <app-message-templates
+        [templates]="templates"
+        (addTemplate)="onAddTemplate($event)"
+        (deleteTemplate)="onDeleteTemplate($event)"
+        (useTemplate)="onUseTemplate($event)"
+      ></app-message-templates>
+      
+      <!-- Тестовое уведомление -->
+      <div class="test-notification">
+        <h3>📤 Отправить тестовое уведомление</h3>
+        <div class="form-group">
+          <input 
+            type="text" 
+            [(ngModel)]="testNotification.title" 
+            placeholder="Заголовок уведомления"
+            class="form-input"
+          >
+        </div>
+        <div class="form-group">
+          <textarea 
+            [(ngModel)]="testNotification.message" 
+            placeholder="Текст уведомления"
+            class="form-textarea"
+            rows="3"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <div class="form-row">
+            <select [(ngModel)]="testNotification.type" class="form-select">
+              <option value="info">Информация</option>
+              <option value="warning">Предупреждение</option>
+              <option value="error">Ошибка</option>
+              <option value="success">Успех</option>
+            </select>
+            
+            <select [(ngModel)]="testNotification.priority" class="form-select">
+              <option value="low">Низкий приоритет</option>
+              <option value="medium">Средний приоритет</option>
+              <option value="high">Высокий приоритет</option>
+            </select>
+          </div>
+        </div>
+        <button 
+          class="send-btn" 
+          (click)="sendTestNotification()"
+          [disabled]="!testNotification.title || !testNotification.message"
+        >
+          Отправить тестовое уведомление
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Система уведомлений &copy; 2024 | Взаимодействие между компонентами</p>
+  </footer>
+</div>

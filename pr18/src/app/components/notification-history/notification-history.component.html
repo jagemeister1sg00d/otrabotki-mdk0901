@@ -1,0 +1,65 @@
+<div class="history">
+  <h3>📊 История уведомлений</h3>
+  
+  <div class="filters">
+    <button 
+      class="filter-btn" 
+      [class.active]="dateFilter === null"
+      (click)="dateFilter = null"
+    >
+      Все даты
+    </button>
+    
+    @for (date of uniqueDates; track date) {
+      <button 
+        class="filter-btn" 
+        [class.active]="dateFilter?.toDateString() === new Date(date).toDateString()"
+        (click)="dateFilter = new Date(date)"
+      >
+        {{ date }}
+      </button>
+    }
+  </div>
+  
+  @if (filteredNotifications.length === 0) {
+    <div class="empty-state">
+      <p>Нет уведомлений</p>
+    </div>
+  } @else {
+    <div class="history-list">
+      @for (notification of filteredNotifications; track notification.id) {
+        <div class="history-item" [class]="getTypeClass(notification.type)">
+          <div class="history-header">
+            <div class="history-title">
+              <strong>{{ notification.title }}</strong>
+              <span class="history-time">
+                {{ formatDate(notification.timestamp) }} в {{ formatTime(notification.timestamp) }}
+              </span>
+            </div>
+            <span class="history-status" [class.read]="notification.read">
+              {{ notification.read ? 'прочитано' : 'не прочитано' }}
+            </span>
+          </div>
+          
+          <p class="history-message">{{ notification.message }}</p>
+          
+          <div class="history-footer">
+            <span class="history-type {{ notification.type }}">
+              {{ 
+                notification.type === 'info' ? 'Информация' :
+                notification.type === 'warning' ? 'Предупреждение' :
+                notification.type === 'error' ? 'Ошибка' : 'Успех'
+              }}
+            </span>
+            <span class="history-priority {{ notification.priority }}">
+              Приоритет: {{ 
+                notification.priority === 'high' ? 'высокий' :
+                notification.priority === 'medium' ? 'средний' : 'низкий'
+              }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

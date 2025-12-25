@@ -1,0 +1,63 @@
+<div class="settings">
+  <h3>⚙️ Настройки уведомлений</h3>
+  
+  <form (ngSubmit)="saveSettings()">
+    <div class="setting-group">
+      <div class="setting-item">
+        <label>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="settings.soundEnabled" 
+            name="soundEnabled"
+          >
+          Звуковые оповещения
+        </label>
+      </div>
+      
+      <div class="setting-item">
+        <label>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="settings.desktopNotifications" 
+            name="desktopNotifications"
+          >
+          Уведомления на рабочем столе
+        </label>
+      </div>
+      
+      <div class="setting-item">
+        <label>
+          <input 
+            type="checkbox" 
+            [(ngModel)]="settings.emailNotifications" 
+            name="emailNotifications"
+          >
+          Email уведомления
+        </label>
+      </div>
+      
+      <div class="setting-item">
+        <label>
+          Задержка уведомлений:
+          <input 
+            type="range" 
+            [(ngModel)]="settings.notificationDelay" 
+            name="notificationDelay"
+            min="1" 
+            max="30"
+          >
+          {{ settings.notificationDelay }} секунд
+        </label>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button type="submit" class="save-btn">
+        Сохранить настройки
+      </button>
+      <button type="button" class="reset-btn" (click)="resetSettings()">
+        Сбросить
+      </button>
+    </div>
+  </form>
+</div>

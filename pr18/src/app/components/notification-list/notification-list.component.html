@@ -1,0 +1,77 @@
+<div class="notification-list">
+  <div class="header">
+    <h3>📩 Уведомления</h3>
+    <div class="controls">
+      <button 
+        class="filter-btn" 
+        [class.active]="filter === 'all'"
+        (click)="filter = 'all'"
+      >
+        Все ({{ notifications.length }})
+      </button>
+      <button 
+        class="filter-btn" 
+        [class.active]="filter === 'unread'"
+        (click)="filter = 'unread'"
+      >
+        Непрочитанные ({{ notifications.filter(n => !n.read).length }})
+      </button>
+      <button class="clear-btn" (click)="onClearAll()">
+        Очистить все
+      </button>
+    </div>
+  </div>
+
+  @if (filteredNotifications.length === 0) {
+    <div class="empty-state">
+      <p>Нет уведомлений</p>
+    </div>
+  } @else {
+    <div class="notifications">
+      @for (notification of filteredNotifications; track notification.id) {
+        <div 
+          class="notification-item" 
+          [class.unread]="!notification.read"
+          [class]="getNotificationClass(notification.type)"
+        >
+          <div class="notification-header">
+            <div class="notification-title">
+              <strong>{{ notification.title }}</strong>
+              <span class="time">{{ formatTime(notification.timestamp) }}</span>
+            </div>
+            <div class="notification-actions">
+              @if (!notification.read) {
+                <button 
+                  class="action-btn read-btn"
+                  (click)="onMarkAsRead(notification.id)"
+                  title="Пометить как прочитанное"
+                >
+                  ✓
+                </button>
+              }
+              <button 
+                class="action-btn delete-btn"
+                (click)="onDelete(notification.id)"
+                title="Удалить"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+          
+          <p class="notification-message">{{ notification.message }}</p>
+          
+          <div class="notification-footer">
+            <span class="priority {{ notification.priority }}">
+              {{ notification.priority === 'high' ? 'Высокий' : 
+                 notification.priority === 'medium' ? 'Средний' : 'Низкий' }} приоритет
+            </span>
+            @if (!notification.read) {
+              <span class="badge">новое</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

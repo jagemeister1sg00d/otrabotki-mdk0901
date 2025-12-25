@@ -1,0 +1,164 @@
+.history {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-btn {
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-btn.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.history-item {
+  padding: 15px;
+  border-radius: 8px;
+  background: #f8f9fa;
+  border-left: 4px solid;
+}
+
+.history-item.info {
+  border-color: #17a2b8;
+}
+
+.history-item.warning {
+  border-color: #ffc107;
+}
+
+.history-item.error {
+  border-color: #dc3545;
+}
+
+.history-item.success {
+  border-color: #28a745;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 10px;
+}
+
+.history-title {
+  flex: 1;
+}
+
+.history-title strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.history-time {
+  font-size: 12px;
+  color: #666;
+}
+
+.history-status {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #6c757d;
+  color: white;
+}
+
+.history-status.read {
+  background: #28a745;
+}
+
+.history-message {
+  margin: 10px 0;
+  color: #333;
+  line-height: 1.5;
+}
+
+.history-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+}
+
+.history-type {
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+.history-type.info {
+  background: #17a2b8;
+  color: white;
+}
+
+.history-type.warning {
+  background: #ffc107;
+  color: black;
+}
+
+.history-type.error {
+  background: #dc3545;
+  color: white;
+}
+
+.history-type.success {
+  background: #28a745;
+  color: white;
+}
+
+.history-priority {
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+}
+
+.history-priority.high {
+  background: #dc3545;
+  color: white;
+}
+
+.history-priority.medium {
+  background: #ffc107;
+  color: black;
+}
+
+.history-priority.low {
+  background: #6c757d;
+  color: white;
+}
