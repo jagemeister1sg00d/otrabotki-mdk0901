@@ -1,0 +1,143 @@
+.game-platform {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  min-height: 100vh;
+  color: #fff;
+}
+
+/* Заголовок */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 2.5em;
+  background: linear-gradient(45deg, #00dbde, #fc00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  margin: 5px 0 0;
+  opacity: 0.8;
+  font-size: 1.1em;
+}
+
+.player-profile {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.player-avatar {
+  font-size: 3em;
+}
+
+.player-info h3 {
+  margin: 0 0 10px;
+  font-size: 1.5em;
+}
+
+.player-stats {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9em;
+}
+
+.level {
+  color: #00dbde;
+  font-weight: bold;
+}
+
+.rating {
+  font-weight: bold;
+}
+
+/* Основной контент */
+.main-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 25px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 1.8em;
+  color: #fff;
+}
+
+/* Кнопки */
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-create, .btn-submit {
+  background: linear-gradient(45deg, #00dbde, #0093e9);
+  color: white;
+}
+
+.btn-join {
+  background: linear-gradient(45deg, #a8ff78, #78ffd6);
+  color: #000;
+}
+
+.btn-unlock, .btn-event {
+  background: linear-gradient(45deg, #ff7e5f, #feb47b);
+  color: white;
+}
+
+.btn-details {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Формы */
+.form-group {
+  margin-bottom: 15px
+}

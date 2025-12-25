@@ -1,0 +1,358 @@
+<div class="game-platform">
+  <!-- Заголовок -->
+  <header class="header">
+    <div class="header-content">
+      <h1>🎮 Игровая платформа</h1>
+      <p class="subtitle">Сервисы и Dependency Injection в Angular</p>
+    </div>
+    
+    <!-- Профиль игрока -->
+    <div class="player-profile">
+      <div class="player-avatar">{{ currentPlayer.avatar }}</div>
+      <div class="player-info">
+        <h3>{{ currentPlayer.username }}</h3>
+        <div class="player-stats">
+          <span class="level">Уровень {{ currentPlayer.level }}</span>
+          <span class="rating" [style.color]="getRatingColor(currentPlayer.rating)">
+            Рейтинг: {{ currentPlayer.rating }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основной контент -->
+  <main class="main-content">
+    <!-- Игровые сессии -->
+    <section class="game-sessions">
+      <div class="section-header">
+        <h2>🎯 Игровые сессии</h2>
+        <button class="btn-create" (click)="createSession()">
+          + Создать сессию
+        </button>
+      </div>
+
+      @if (isLoading.sessions) {
+        <div class="loading">Загрузка сессий...</div>
+      } @else if (errors.sessions) {
+        <div class="error">{{ errors.sessions }}</div>
+      } @else {
+        <div class="sessions-list">
+          <!-- Форма создания сессии -->
+          <div class="create-session-form">
+            <h3>Создать новую сессию</h3>
+            <div class="form-group">
+              <label>Название игры:</label>
+              <input type="text" [(ngModel)]="newSession.gameName" placeholder="Введите название игры">
+            </div>
+            <div class="form-group">
+              <label>Максимум игроков:</label>
+              <input type="number" [(ngModel)]="newSession.maxPlayers" min="2" max="10">
+            </div>
+            <button class="btn-submit" (click)="createSession()">Создать сессию</button>
+          </div>
+
+          <!-- Список сессий -->
+          @for (session of activeSessions; track session.id) {
+            <div class="session-card" [class.active]="session.status === 'active'">
+              <div class="session-header">
+                <h3>{{ session.gameName }}</h3>
+                <span class="session-status" [class]="session.status">
+                  {{ 
+                    session.status === 'waiting' ? 'Ожидание' :
+                    session.status === 'active' ? 'В процессе' :
+                    session.status === 'finished' ? 'Завершена' : 'Отменена'
+                  }}
+                </span>
+              </div>
+              
+              <div class="session-info">
+                <div class="players-count">
+                  <span>Игроков: {{ session.currentPlayers }}/{{ session.maxPlayers }}</span>
+                </div>
+                <div class="session-time">
+                  <span>Создана: {{ formatTime(session.startTime) }}</span>
+                </div>
+              </div>
+
+              <div class="session-actions">
+                @if (session.status === 'waiting' && session.currentPlayers < session.maxPlayers) {
+                  <button class="btn-join" (click)="joinSession(session.id)">
+                    Присоединиться
+                  </button>
+                }
+                <button class="btn-details">
+                  Подробнее
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Таблица лидеров -->
+    <section class="leaderboard">
+      <div class="section-header">
+        <h2>🏆 Таблица лидеров</h2>
+      </div>
+
+      @if (isLoading.leaderboard) {
+        <div class="loading">Загрузка таблицы лидеров...</div>
+      } @else if (errors.leaderboard) {
+        <div class="error">{{ errors.leaderboard }}</div>
+      } @else {
+        <div class="leaderboard-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Место</th>
+                <th>Игрок</th>
+                <th>Рейтинг</th>
+                <th>Игр</th>
+                <th>Побед %</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of leaderboard; track entry.playerId) {
+                <tr [class.current-player]="entry.playerId === currentPlayer.id">
+                  <td class="rank">
+                    <span class="rank-number">{{ entry.rank }}</span>
+                    @if (entry.rank <= 3) {
+                      <span class="medal">
+                        {{ entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : '🥉' }}
+                      </span>
+                    }
+                  </td>
+                  <td class="player">
+                    <span class="avatar">{{ entry.avatar }}</span>
+                    <span class="username">{{ entry.username }}</span>
+                  </td>
+                  <td class="rating" [style.color]="getRatingColor(entry.rating)">
+                    {{ entry.rating }}
+                  </td>
+                  <td class="games">{{ entry.gamesPlayed }}</td>
+                  <td class="win-rate">{{ entry.winRate.toFixed(1) }}%</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <!-- Достижения -->
+    <section class="achievements">
+      <div class="section-header">
+        <h2>🏅 Достижения</h2>
+        <button class="btn-unlock" (click)="unlockTestAchievement()">
+          🔓 Разблокировать тест
+        </button>
+      </div>
+
+      @if (isLoading.achievements) {
+        <div class="loading">Загрузка достижений...</div>
+      } @else if (errors.achievements) {
+        <div class="error">{{ errors.achievements }}</div>
+      } @else {
+        <div class="achievements-content">
+          <!-- Прогресс по достижениям -->
+          @if (achievementProgress) {
+            <div class="achievements-progress">
+              <div class="progress-info">
+                <h3>Прогресс: {{ achievementProgress.unlocked }}/{{ achievementProgress.total }}</h3>
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width.%]="achievementProgress.progress"></div>
+                </div>
+                <p>Очки: {{ achievementProgress.totalPoints }}</p>
+              </div>
+            </div>
+          }
+
+          <!-- Список достижений -->
+          <div class="achievements-grid">
+            @for (achievement of playerAchievements; track achievement.id) {
+              <div class="achievement-card" [class.unlocked]="achievement.unlocked">
+                <div class="achievement-icon">{{ achievement.icon }}</div>
+                <div class="achievement-info">
+                  <h4>{{ achievement.name }}</h4>
+                  <p>{{ achievement.description }}</p>
+                  <div class="achievement-meta">
+                    <span class="points">{{ achievement.points }} очков</span>
+                    <span class="category">{{ achievement.category }}</span>
+                  </div>
+                </div>
+                <div class="achievement-status">
+                  @if (achievement.unlocked && achievement.unlockDate) {
+                    <span class="unlocked-date">
+                      {{ formatDate(achievement.unlockDate) }}
+                    </span>
+                  } @else {
+                    <span class="locked">🔒</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </section>
+
+    <!-- Мультиплеерные игры -->
+    <section class="multiplayer">
+      <div class="section-header">
+        <h2>👥 Мультиплеер</h2>
+        <button class="btn-create" (click)="createMultiplayerGame()">
+          + Создать игру
+        </button>
+      </div>
+
+      @if (isLoading.multiplayer) {
+        <div class="loading">Загрузка игр...</div>
+      } @else if (errors.multiplayer) {
+        <div class="error">{{ errors.multiplayer }}</div>
+      } @else {
+        <div class="multiplayer-content">
+          <!-- Форма создания игры -->
+          <div class="create-game-form">
+            <h3>Создать мультиплеерную игру</h3>
+            <div class="form-group">
+              <label>Название:</label>
+              <input type="text" [(ngModel)]="newMultiplayerGame.name" placeholder="Название игры">
+            </div>
+            <div class="form-group">
+              <label>Описание:</label>
+              <textarea [(ngModel)]="newMultiplayerGame.description" placeholder="Описание игры" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Максимум игроков:</label>
+              <input type="number" [(ngModel)]="newMultiplayerGame.maxPlayers" min="2" max="16">
+            </div>
+            <button class="btn-submit" (click)="createMultiplayerGame()">Создать игру</button>
+          </div>
+
+          <!-- Список игр -->
+          <div class="games-list">
+            <h3>Доступные игры</h3>
+            @for (game of multiplayerGames; track game.id) {
+              <div class="game-card">
+                <div class="game-header">
+                  <h4>{{ game.name }}</h4>
+                  <span class="game-status" [class]="game.status">
+                    {{ 
+                      game.status === 'waiting' ? 'Ожидание' :
+                      game.status === 'in_progress' ? 'В процессе' : 'Завершена'
+                    }}
+                  </span>
+                </div>
+                
+                <p class="game-description">{{ game.description }}</p>
+                
+                <div class="game-info">
+                  <div class="players">
+                    <span>Игроков: {{ game.activePlayers }}/{{ game.maxPlayers }}</span>
+                  </div>
+                  <div class="created">
+                    <span>Создана: {{ formatDate(game.createdAt) }}</span>
+                  </div>
+                </div>
+
+                <div class="game-actions">
+                  @if (game.status === 'waiting' && game.activePlayers < game.maxPlayers) {
+                    <button class="btn-join" (click)="joinMultiplayerGame(game.id)">
+                      Присоединиться
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <!-- Текущая игра и чат -->
+          @if (currentMultiplayerGame) {
+            <div class="current-game">
+              <h3>Текущая игра: {{ currentMultiplayerGame.name }}</h3>
+              
+              <div class="game-controls">
+                <button class="btn-event" (click)="simulateGameEvent()">
+                  Симулировать событие
+                </button>
+              </div>
+
+              <!-- Чат -->
+              <div class="game-chat">
+                <h4>Чат игры</h4>
+                <div class="chat-messages">
+                  <!-- Сообщения будут здесь -->
+                </div>
+                <div class="chat-input">
+                  <input type="text" [(ngModel)]="chatMessage" placeholder="Введите сообщение...">
+                  <button (click)="sendChatMessage()">Отправить</button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Информация о сервисах -->
+    <section class="services-info">
+      <h2>🔧 Используемые сервисы</h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <h3>GameSessionService</h3>
+          <p>Управление игровыми сессиями</p>
+          <ul>
+            <li>Создание сессий</li>
+            <li>Присоединение игроков</li>
+            <li>Управление состоянием</li>
+          </ul>
+        </div>
+        
+        <div class="service-card">
+          <h3>PlayerRatingService</h3>
+          <p>Рейтинг игроков</p>
+          <ul>
+            <li>Расчет рейтинга</li>
+            <li>Таблица лидеров</li>
+            <li>История рейтинга</li>
+          </ul>
+        </div>
+        
+        <div class="service-card">
+          <h3>AchievementsService</h3>
+          <p>Достижения и награды</p>
+          <ul>
+            <li>Разблокировка достижений</li>
+            <li>Выдача наград</li>
+            <li>Отслеживание прогресса</li>
+          </ul>
+        </div>
+        
+        <div class="service-card">
+          <h3>MultiplayerService</h3>
+          <p>Мультиплеерная игра</p>
+          <ul>
+            <li>Создание игр</li>
+            <li>Реалтайм обновления</li>
+            <li>Игровой чат</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>Практическая работа №8: Сервисы и Dependency Injection в Angular</p>
+      <p>Вариант 10: Сервисы для игровой платформы</p>
+      <div class="tech-stack">
+        <span>Angular</span>
+        <span>RxJS</span>
+        <span>Dependency Injection</span>
+        <span>Services</span>
+      </div>
+    </div>
+  </footer>
+</div>
