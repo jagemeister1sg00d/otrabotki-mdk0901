@@ -1,0 +1,203 @@
+<div class="booking-system">
+  <header class="header">
+    <h1>🎯 Система бронирования</h1>
+    <div class="current-time">
+      <span>Текущее время: {{ currentTime() }}</span>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Календарь -->
+    <section class="calendar-section">
+      <h2>📅 Выберите дату</h2>
+      <div class="calendar">
+        @for (day of calendarDays; track day) {
+          <button 
+            class="day-btn"
+            [class.today]="isToday(day)"
+            [class.selected]="isSelected(day)"
+            (click)="selectDate(day)"
+          >
+            <div class="day-week">{{ formatDate(day) }}</div>
+            <div class="day-availability">
+              @if (bookingService.getSlotsByDate(day).some(s => s.available)) {
+                <span class="available">Есть места</span>
+              } @else {
+                <span class="unavailable">Нет мест</span>
+              }
+            </div>
+          </button>
+        }
+      </div>
+    </section>
+
+    <!-- Временные слоты -->
+    <section class="time-section">
+      <h2>⏰ Выберите время</h2>
+      
+      @if (getTimeSlotsForSelectedDate().length === 0) {
+        <p class="no-slots">На выбранную дату нет доступных слотов</p>
+      } @else {
+        <div class="time-slots">
+          @for (time of getTimeSlotsForSelectedDate(); track time) {
+            <button 
+              class="time-btn"
+              [class.selected]="selectedSlot()?.time === time"
+              [class.available]="isTimeAvailable(selectedDate, time)"
+              [class.unavailable]="!isTimeAvailable(selectedDate, time)"
+              (click)="selectTime(time)"
+              [disabled]="!isTimeAvailable(selectedDate, time)"
+            >
+              <span class="time">{{ time }}</span>
+              <span class="price">{{ getPriceForTime(time) }} ₽</span>
+              @if (!isTimeAvailable(selectedDate, time)) {
+                <span class="booked">Занято</span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Информация о выборе -->
+    <section class="info-section">
+      <div class="selected-info">
+        @if (selectedSlot()) {
+          <h2>✅ Вы выбрали:</h2>
+          <div class="selection-details">
+            <p><strong>Дата:</strong> {{ formatDate(selectedDate) }}</p>
+            <p><strong>Время:</strong> {{ selectedSlot()?.time }}</p>
+            <p><strong>Базовая цена:</strong> {{ selectedSlot()?.price }} ₽</p>
+            
+            <!-- Динамическое ценообразование -->
+            <div class="dynamic-pricing">
+              <h3>📊 Динамическое ценообразование:</h3>
+              <ul>
+                @if (selectedDate.getDay() === 5 || selectedDate.getDay() === 6) {
+                  <li>+30% за выходные</li>
+                }
+                @if (parseInt(selectedSlot()?.time?.split(':')[0] || '0') < 12) {
+                  <li>-10% за утренние часы</li>
+                }
+              </ul>
+            </div>
+            
+            <div class="final-price">
+              <h3>Итоговая цена: {{ totalPrice() }} ₽</h3>
+            </div>
+          </div>
+        } @else {
+          <p>Выберите дату и время для бронирования</p>
+        }
+      </div>
+    </section>
+
+    <!-- Форма бронирования -->
+    <section class="booking-form">
+      <h2>📝 Бронирование</h2>
+      
+      @if (selectedSlot()) {
+        <div class="form">
+          <div class="form-group">
+            <label for="name">Ваше имя:</label>
+            <input 
+              type="text" 
+              id="name" 
+              [(ngModel)]="bookingName"
+              placeholder="Введите ваше имя"
+              [disabled]="!selectedSlot()?.available"
+            >
+          </div>
+          
+          <div class="form-group">
+            <label>Статус:</label>
+            @if (selectedSlot()?.available) {
+              <span class="status available">Доступно для бронирования</span>
+            } @else {
+              <span class="status unavailable">Занято</span>
+              @if (selectedSlot()?.bookedBy) {
+                <p>Забронировано: {{ selectedSlot()?.bookedBy }}</p>
+              }
+            }
+          </div>
+          
+          <button 
+            class="book-btn"
+            (click)="book()"
+            [disabled]="!selectedSlot()?.available || !bookingName.trim() || isBooking"
+          >
+            @if (isBooking) {
+              <span class="loading">Бронирование...</span>
+            } @else {
+              <span>Забронировать за {{ totalPrice() }} ₽</span>
+            }
+          </button>
+          
+          @if (selectedSlot()?.bookedBy && !selectedSlot()?.available) {
+            <button 
+              class="cancel-btn"
+              (click)="cancelBooking(selectedSlot()!.id)"
+            >
+              Отменить бронирование
+            </button>
+          }
+        </div>
+      } @else {
+        <p>Сначала выберите время</p>
+      }
+      
+      @if (bookingResult) {
+        <div class="result-message">
+          {{ bookingResult }}
+        </div>
+      }
+    </section>
+
+    <!-- Доступные слоты (реактивный список) -->
+    <section class="available-slots">
+      <h2>📋 Доступные слоты на {{ formatDate(selectedDate) }}</h2>
+      
+      @if (availableSlots().length === 0) {
+        <p>Нет доступных слотов на выбранную дату</p>
+      } @else {
+        <div class="slots-list">
+          @for (slot of availableSlots(); track slot.id) {
+            <div class="slot-item">
+              <div class="slot-time">{{ slot.time }}</div>
+              <div class="slot-price">{{ slot.price }} ₽</div>
+              <div class="slot-status available">Доступно</div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Информация о системе -->
+    <section class="system-info">
+      <h2>ℹ️ Информация о системе</h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <h3>Реактивный календарь</h3>
+          <p>Даты обновляются в реальном времени</p>
+        </div>
+        <div class="info-item">
+          <h3>Проверка доступности</h3>
+          <p>Автоматическая проверка свободных слотов</p>
+        </div>
+        <div class="info-item">
+          <h3>Динамическое ценообразование</h3>
+          <p>Цена меняется в зависимости от даты и времени</p>
+        </div>
+        <div class="info-item">
+          <h3>Бронирование в реальном времени</h3>
+          <p>Мгновенное обновление статуса</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Реактивная система бронирования &copy; 2024</p>
+    <p>Обновления в реальном времени • Сигналы • RxJS</p>
+  </footer>
+</div>
