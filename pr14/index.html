@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Manager - TypeScript Практическая работа 14</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-play-circle"></i> Media Manager API</h1>
+                <p class="subtitle">TypeScript Практическая работа 14 - Вариант 10</p>
+                <p class="header-description">Типизированный менеджер для работы с аудио/видео API: события, состояния и асинхронные операции</p>
+            </div>
+            <div class="tech-badge">
+                <span class="typescript-badge">TypeScript</span>
+                <span class="async-badge">Async/Await</span>
+                <span class="events-badge">Типизированные события</span>
+                <span class="api-badge">Media API</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="media-controls-section">
+                <section class="player-section">
+                    <h2><i class="fas fa-video"></i> Медиа-плеер</h2>
+                    <div class="player-container">
+                        <video id="mediaPlayer" class="media-player" controls>
+                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                            Ваш браузер не поддерживает видео тег.
+                        </video>
+                        <div class="custom-controls">
+                            <div class="control-row">
+                                <button id="playBtn" class="control-btn btn-primary">
+                                    <i class="fas fa-play"></i> Воспроизведение
+                                </button>
+                                <button id="pauseBtn" class="control-btn">
+                                    <i class="fas fa-pause"></i> Пауза
+                                </button>
+                                <button id="stopBtn" class="control-btn">
+                                    <i class="fas fa-stop"></i> Стоп
+                                </button>
+                            </div>
+                            <div class="control-row">
+                                <button id="muteBtn" class="control-btn">
+                                    <i class="fas fa-volume-mute"></i> Без звука
+                                </button>
+                                <button id="fullscreenBtn" class="control-btn">
+                                    <i class="fas fa-expand"></i> Полный экран
+                                </button>
+                                <button id="pictureInPictureBtn" class="control-btn">
+                                    <i class="fas fa-compress"></i> Картинка в картинке
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-info">
+                        <div class="info-item">
+                            <span class="info-label">Источник:</span>
+                            <span class="info-value">Big Buck Bunny (демо видео)</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Длительность:</span>
+                            <span class="info-value" id="durationDisplay">00:00</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Текущее время:</span>
+                            <span class="info-value" id="currentTimeDisplay">00:00</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="media-manager-section">
+                    <h2><i class="fas fa-sliders-h"></i> Управление медиа</h2>
+                    
+                    <div class="manager-controls">
+                        <div class="control-group">
+                            <h3><i class="fas fa-volume-up"></i> Громкость</h3>
+                            <div class="slider-container">
+                                <input type="range" id="volumeSlider" min="0" max="100" value="70" class="slider">
+                                <span class="slider-value" id="volumeValue">70%</span>
+                            </div>
+                            <button id="setVolumeBtn" class="btn-action">
+                                <i class="fas fa-check"></i> Установить громкость
+                            </button>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h3><i class="fas fa-tachometer-alt"></i> Скорость воспроизведения</h3>
+                            <div class="speed-controls">
+                                <button class="speed-btn" data-speed="0.5">0.5x</button>
+                                <button class="speed-btn" data-speed="1">1x</button>
+                                <button class="speed-btn" data-speed="1.5">1.5x</button>
+                                <button class="speed-btn" data-speed="2">2x</button>
+                            </div>
+                            <div class="custom-speed">
+                                <input type="number" id="customSpeed" min="0.1" max="4" step="0.1" value="1" placeholder="Скорость">
+                                <button id="setCustomSpeedBtn" class="btn-action">
+                                    <i class="fas fa-rocket"></i> Установить
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h3><i class="fas fa-forward"></i> Перемотка</h3>
+                            <div class="seek-controls">
+                                <button class="seek-btn" data-seek="-10">
+                                    <i class="fas fa-backward"></i> -10с
+                                </button>
+                                <button class="seek-btn" data-seek="-5">
+                                    <i class="fas fa-step-backward"></i> -5с
+                                </button>
+                                <button class="seek-btn" data-seek="5">
+                                    <i class="fas fa-step-forward"></i> +5с
+                                </button>
+                                <button class="seek-btn" data-seek="10">
+                                    <i class="fas fa-forward"></i> +10с
+                                </button>
+                            </div>
+                            <div class="custom-seek">
+                                <input type="number" id="customSeek" min="0" value="30" placeholder="Секунды">
+                                <button id="seekToBtn" class="btn-action">
+                                    <i class="fas fa-redo"></i> Перейти к
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="media-source-control">
+                        <h3><i class="fas fa-exchange-alt"></i> Смена источника</h3>
+                        <div class="source-buttons">
+                            <button class="source-btn" data-source="video1">
+                                <i class="fas fa-film"></i> Big Buck Bunny
+                            </button>
+                            <button class="source-btn" data-source="video2">
+                                <i class="fas fa-film"></i> Elephants Dream
+                            </button>
+                            <button class="source-btn" data-source="video3">
+                                <i class="fas fa-film"></i> Tears of Steel
+                            </button>
+                            <button class="source-btn" data-source="audio">
+                                <i class="fas fa-music"></i> Аудио пример
+                            </button>
+                        </div>
+                        <div class="custom-source">
+                            <input type="url" id="customSource" placeholder="https://example.com/video.mp4">
+                            <button id="loadCustomSourceBtn" class="btn-action">
+                                <i class="fas fa-cloud-download-alt"></i> Загрузить
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="monitoring-section">
+                <section class="state-monitor">
+                    <h2><i class="fas fa-heartbeat"></i> Мониторинг состояния</h2>
+                    <div class="state-grid">
+                        <div class="state-card" id="playbackStateCard">
+                            <div class="state-header">
+                                <i class="fas fa-play-circle"></i>
+                                <h3>Статус воспроизведения</h3>
+                            </div>
+                            <div class="state-value" id="playbackState">Неактивно</div>
+                            <div class="state-indicator" id="playbackIndicator"></div>
+                        </div>
+                        
+                        <div class="state-card" id="networkStateCard">
+                            <div class="state-header">
+                                <i class="fas fa-network-wired"></i>
+                                <h3>Сетевое состояние</h3>
+                            </div>
+                            <div class="state-value" id="networkState">Неизвестно</div>
+                            <div class="state-indicator" id="networkIndicator"></div>
+                        </div>
+                        
+                        <div class="state-card" id="readyStateCard">
+                            <div class="state-header">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Готовность</h3>
+                            </div>
+                            <div class="state-value" id="readyState">Не готово</div>
+                            <div class="state-indicator" id="readyIndicator"></div>
+                        </div>
+                        
+                        <div class="state-card" id="errorStateCard">
+                            <div class="state-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>Ошибки</h3>
+                            </div>
+                            <div class="state-value" id="errorState">Нет ошибок</div>
+                            <div class="state-indicator" id="errorIndicator"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="metrics-container">
+                        <h3><i class="fas fa-chart-line"></i> Метрики</h3>
+                        <div class="metrics-grid">
+                            <div class="metric">
+                                <div class="metric-label">Загружено</div>
+                                <div class="metric-value" id="bufferedMetric">0%</div>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" id="bufferedBar"></div>
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Пропускная способность</div>
+                                <div class="metric-value" id="bandwidthMetric">0 KB/s</div>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" id="bandwidthBar"></div>
+                                </div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Задержка</div>
+                                <div class="metric-value" id="latencyMetric">0ms</div>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" id="latencyBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="events-log">
+                    <h2><i class="fas fa-list-alt"></i> Журнал событий</h2>
+                    <div class="events-controls">
+                        <div class="event-filters">
+                            <button class="filter-btn active" data-filter="all">Все</button>
+                            <button class="filter-btn" data-filter="playback">Воспроизведение</button>
+                            <button class="filter-btn" data-filter="network">Сеть</button>
+                            <button class="filter-btn" data-filter="error">Ошибки</button>
+                            <button class="filter-btn" data-filter="user">Пользователь</button>
+                        </div>
+                        <button id="clearEventsBtn" class="btn-clear">
+                            <i class="fas fa-trash"></i> Очистить
+                        </button>
+                    </div>
+                    
+                    <div class="events-container" id="eventsContainer">
+                        <div class="event-entry">
+                            <div class="event-time">[12:00:00]</div>
+                            <div class="event-type info">ИНФО</div>
+                            <div class="event-message">Система инициализирована. Медиа-менеджер готов к работе.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="events-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Всего событий:</div>
+                            <div class="stat-value" id="totalEvents">1</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Ошибок:</div>
+                            <div class="stat-value" id="errorEvents">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Последнее:</div>
+                            <div class="stat-value" id="lastEventTime">12:00:00</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="async-operations">
+                <h2><i class="fas fa-sync-alt"></i> Асинхронные операции</h2>
+                <div class="async-grid">
+                    <div class="async-card">
+                        <div class="async-header">
+                            <i class="fas fa-download"></i>
+                            <h3>Предзагрузка медиа</h3>
+                        </div>
+                        <p>Асинхронная загрузка метаданных и буферизация</p>
+                        <button id="preloadBtn" class="btn-async">
+                            <i class="fas fa-spinner"></i> Предзагрузить
+                        </button>
+                        <div class="async-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="preloadProgress"></div>
+                            </div>
+                            <span id="preloadStatus">Готово</span>
+                        </div>
+                    </div>
+                    
+                    <div class="async-card">
+                        <div class="async-header">
+                            <i class="fas fa-sync"></i>
+                            <h3>Перезагрузка источника</h3>
+                        </div>
+                        <p>Асинхронная перезагрузка текущего медиа</p>
+                        <button id="reloadBtn" class="btn-async">
+                            <i class="fas fa-redo"></i> Перезагрузить
+                        </button>
+                        <div class="async-status" id="reloadStatus">Готово</div>
+                    </div>
+                    
+                    <div class="async-card">
+                        <div class="async-header">
+                            <i class="fas fa-clock"></i>
+                            <h3>Таймер авто-паузы</h3>
+                        </div>
+                        <p>Автоматическая пауза через указанное время</p>
+                        <div class="timer-controls">
+                            <input type="number" id="autoPauseTime" min="5" max="300" value="30">
+                            <span>секунд</span>
+                        </div>
+                        <button id="startAutoPauseBtn" class="btn-async">
+                            <i class="fas fa-hourglass-start"></i> Запустить таймер
+                        </button>
+                        <div class="async-status" id="autoPauseStatus">Неактивно</div>
+                    </div>
+                    
+                    <div class="async-card">
+                        <div class="async-header">
+                            <i class="fas fa-crosshairs"></i>
+                            <h3>Поиск фрагментов</h3>
+                        </div>
+                        <p>Асинхронный поиск по ключевым кадрам</p>
+                        <input type="text" id="searchKeyword" placeholder="Введите ключевое слово">
+                        <button id="searchFramesBtn" class="btn-async">
+                            <i class="fas fa-search"></i> Найти фрагменты
+                        </button>
+                        <div class="async-status" id="searchStatus">Готово</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="code-example">
+                <h2><i class="fas fa-code"></i> Пример типизации асинхронных операций</h2>
+                <div class="code-container">
+                    <pre><code>
+// Типизированные события медиа
+type MediaEventType = 
+  | 'play' | 'pause' | 'ended' | 'timeupdate' 
+  | 'volumechange' | 'ratechange' | 'seeking' | 'seeked'
+  | 'waiting' | 'playing' | 'canplay' | 'loadedmetadata'
+  | 'error' | 'stalled' | 'suspend' | 'abort';
+
+interface MediaEvent {
+  type: MediaEventType;
+  timestamp: number;
+  data?: any;
+}
+
+// Состояния медиа-плеера
+enum MediaState {
+  IDLE = 'IDLE',
+  LOADING = 'LOADING',
+  READY = 'READY',
+  PLAYING = 'PLAYING',
+  PAUSED = 'PAUSED',
+  STOPPED = 'STOPPED',
+  BUFFERING = 'BUFFERING',
+  ENDED = 'ENDED',
+  ERROR = 'ERROR'
+}
+
+// Асинхронные методы с типизацией
+class MediaManager {
+  // Загрузка медиа с прогрессом
+  async loadMedia(
+    source: string, 
+    onProgress?: (progress: number) => void
+  ): Promise&lt;MediaMetadata&gt; {
+    return new Promise((resolve, reject) => {
+      // Асинхронная загрузка с отслеживанием прогресса
+    });
+  }
+  
+  // Поиск по медиа с фильтрацией
+  async searchInMedia(
+    keyword: string, 
+    filters?: SearchFilters
+  ): Promise&lt;MediaSegment[]&gt; {
+    return new Promise((resolve, reject) => {
+      // Асинхронный поиск
+    });
+  }
+}
+                    </code></pre>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Практическая работа по TypeScript. Вариант 10: Менеджер для работы с аудио/видео API</p>
+                <p class="footer-info">
+                    <i class="fas fa-graduation-cap"></i> Типизация асинхронных операций, событий и состояний
+                </p>
+            </div>
+            <div class="media-info-footer">
+                <span>HTML5 Media API</span>
+                <span>TypeScript 4.5+</span>
+                <span>Async/Await</span>
+                <span>Event-Driven</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Аудио элемент для тестирования -->
+    <audio id="audioPlayer" style="display: none;">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
